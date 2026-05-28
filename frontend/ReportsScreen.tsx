@@ -158,7 +158,9 @@ function carrierDot(status: string): string {
 
 function DrugsTab({ serif, serifBold }: { serif?: string; serifBold?: string }) {
   const { report } = useApp();
-  const genes: GeneResult[] = report?.pharmacogenomics.genes ?? [];
+  const allGenes: GeneResult[] = report?.pharmacogenomics.genes ?? [];
+  const genes = allGenes.filter(g => g.status !== 'not_callable');
+  const notCallable = allGenes.filter(g => g.status === 'not_callable');
   const summary = report?.pharmacogenomics.summary;
 
   return (
@@ -181,7 +183,7 @@ function DrugsTab({ serif, serifBold }: { serif?: string; serifBold?: string }) 
         </View>
       )}
 
-      {genes.length === 0 && <EmptyState text="No pharmacogenomics data available." />}
+      {genes.length === 0 && notCallable.length === 0 && <EmptyState text="No pharmacogenomics data available." />}
 
       {genes.map(gene => (
         <SectionCard key={gene.gene} accent={C.amber}>
@@ -192,14 +194,14 @@ function DrugsTab({ serif, serifBold }: { serif?: string; serifBold?: string }) 
                 <Text style={[styles.geneAllele, { fontFamily: serifBold }]}>{gene.metabolizer_status}</Text>
               </View>
               <Badge
-                label={gene.status_label.toUpperCase()}
+                label={(gene.status_label ?? '').toUpperCase()}
                 bg="#FFF7E2"
                 color="#B26E00"
               />
             </View>
-            <MetaRow label="Phenotype" value={gene.status_label} serif={serif} serifBold={serifBold} />
+            <MetaRow label="Phenotype" value={gene.status_label ?? ''} serif={serif} serifBold={serifBold} />
 
-            {gene.drug_flags.length > 0 && (
+            {(gene.drug_flags?.length ?? 0) > 0 && (
               <>
                 <Divider />
                 <Text style={[styles.subheading, { fontFamily: serifBold }]}>Affected Drugs</Text>
@@ -216,11 +218,21 @@ function DrugsTab({ serif, serifBold }: { serif?: string; serifBold?: string }) 
               </>
             )}
 
-            {gene.drug_flags.length === 0 && (
+            {(gene.drug_flags?.length ?? 0) === 0 && (
               <Text style={[styles.noFlags, { fontFamily: serif }]}>No drug interactions flagged for this gene.</Text>
             )}
           </View>
         </SectionCard>
+      ))}
+
+      {notCallable.map(gene => (
+        <View key={gene.gene} style={[styles.infoBox, { backgroundColor: C.blueBg, borderLeftColor: C.blue }]}>
+          <Text style={[styles.infoBoxTitle, { fontFamily: serifBold, color: C.blueText }]}>{gene.gene} — Not Callable</Text>
+          <Text style={[styles.infoBoxBody, { fontFamily: serif, color: C.blueText, marginBottom: 6 }]}>{gene.disclaimer}</Text>
+          {(gene.affected_drugs ?? []).map((drug, i) => (
+            <Text key={i} style={[styles.infoBoxBody, { fontFamily: serif, color: C.blueText }]}>· {drug}</Text>
+          ))}
+        </View>
       ))}
     </ScrollView>
   );

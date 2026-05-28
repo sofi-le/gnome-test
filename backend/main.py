@@ -183,6 +183,18 @@ app.add_middleware(
 )
 
 
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request, exc):
+    """Ensure CORS headers are present even on unhandled 500s.
+    Without this, the browser gets a network-level 'Failed to fetch' instead of a readable error."""
+    from fastapi.responses import JSONResponse
+    return JSONResponse(
+        status_code=500,
+        content={"detail": str(exc)},
+        headers={"Access-Control-Allow-Origin": "*"},
+    )
+
+
 @app.get("/api/health")
 def health():
     sb = get_supabase()

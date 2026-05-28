@@ -26,16 +26,22 @@ function guessMimeType(fileName: string): string {
   }
 }
 
-export async function parseFile(fileUri: string, fileName: string): Promise<ParseResult> {
-  console.log(`[api] parseFile name=${fileName} uri=${fileUri} base=${API_BASE_URL}`);
+export async function parseFile(fileUri: string, fileName: string, webFile?: File): Promise<ParseResult> {
+  console.log(`[api] parseFile name=${fileName} platform=${Platform.OS} base=${API_BASE_URL}`);
 
   const form = new FormData();
-  // React Native FormData accepts a {uri, name, type} object; cast to any for TS.
-  form.append('file', {
-    uri: Platform.OS === 'ios' ? fileUri.replace('file://', '') : fileUri,
-    name: fileName,
-    type: guessMimeType(fileName),
-  } as any);
+  if (Platform.OS === 'web') {
+    if (!webFile) throw new Error('File object missing — please try picking the file again.');
+    // Browser FormData requires a native File/Blob
+    form.append('file', webFile, fileName);
+  } else {
+    // React Native native: {uri, name, type} object
+    form.append('file', {
+      uri: fileUri,
+      name: fileName,
+      type: guessMimeType(fileName),
+    } as any);
+  }
 
   const res = await fetch(`${API_BASE_URL}/api/parse`, {
     method: 'POST',

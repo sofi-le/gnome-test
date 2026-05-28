@@ -65,7 +65,7 @@ export default function UploadScreen({ onFileSelected }: Props) {
       console.log(`[Upload] picked file: ${asset.name}  uri: ${asset.uri}`);
 
       try {
-        const parsed = await parseFile(asset.uri, asset.name);
+        const parsed = await parseFile(asset.uri, asset.name, (asset as any).file ?? undefined);
         console.log('[Upload] parse success:', parsed);
         setParseResult(parsed);
         setTimeout(onFileSelected, 300);
