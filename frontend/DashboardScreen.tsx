@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
   Image, SafeAreaView, StatusBar, Dimensions,
@@ -61,6 +61,7 @@ interface Props {
 
 export default function DashboardScreen({ onOpenReport, onTabPress }: Props) {
   const [fontsLoaded] = useFonts({ InriaSerif_400Regular, InriaSerif_700Bold });
+  const [healthScoreExpanded, setHealthScoreExpanded] = useState(false);
   const { report, parseResult, healthScore, dominantAncestry } = useApp();
 
   const serif     = fontsLoaded ? 'InriaSerif_400Regular' : undefined;
@@ -114,7 +115,12 @@ export default function DashboardScreen({ onOpenReport, onTabPress }: Props) {
 
         {/* ── Health Score card ───────────────────────────────────────── */}
         <View style={styles.card}>
-          <Text style={[styles.sectionLabel, { fontFamily: serif }]}>Your Health Score</Text>
+          <View style={styles.scoreHeader}>
+            <Text style={[styles.sectionLabel, { fontFamily: serif }]}>Your Health Score</Text>
+            <TouchableOpacity onPress={() => setHealthScoreExpanded(!healthScoreExpanded)}>
+              <Text style={[styles.infoIcon, { fontFamily: serif }]}>ⓘ</Text>
+            </TouchableOpacity>
+          </View>
           <View style={styles.scoreRow}>
             <Text style={[styles.scoreNum, { fontFamily: serifBold }]}>{healthScore}</Text>
             <Text style={[styles.scoreOf,  { fontFamily: serif }]}> /100</Text>
@@ -127,6 +133,29 @@ export default function DashboardScreen({ onOpenReport, onTabPress }: Props) {
             <View style={[styles.barFill, { width: `${healthScore}%` }]} />
             <View style={[styles.barDot,  { left: `${healthScore}%`, marginLeft: -5.5 }]} />
           </View>
+          {healthScoreExpanded && (
+            <View style={styles.infoSection}>
+              <Text style={[styles.infoTitle, { fontFamily: serifBold }]}>How is this calculated?</Text>
+              <Text style={[styles.infoText, { fontFamily: serif }]}>
+                Your health score is derived from weighted risk assessments across:
+              </Text>
+              <Text style={[styles.infoBullet, { fontFamily: serif }]}>
+                • Pharmacogenomics (drug metabolism compatibility)
+              </Text>
+              <Text style={[styles.infoBullet, { fontFamily: serif }]}>
+                • Disease risk profiles (genetic predispositions)
+              </Text>
+              <Text style={[styles.infoBullet, { fontFamily: serif }]}>
+                • Carrier status (recessive condition screening)
+              </Text>
+              <Text style={[styles.infoBullet, { fontFamily: serif }]}>
+                • Nutrition & lifestyle traits (personalized insights)
+              </Text>
+              <Text style={[styles.infoText, { fontFamily: serif, marginTop: 8 }]}>
+                Higher scores indicate better genetic compatibility and lower overall risk. Your ancestry is factored into risk benchmarking for accuracy.
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* ── Top Priority ────────────────────────────────────────────── */}
@@ -255,4 +284,11 @@ const styles = StyleSheet.create({
   reportTitle:    { fontSize: 12, color: C.textPrimary, marginBottom: 2 },
   reportSubtitle: { fontSize: 9,  color: C.textSecondary },
   chevron: { fontSize: 18, color: C.textLight, marginTop: -2 },
+
+  scoreHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+  infoIcon: { fontSize: 16, color: C.textLight, fontWeight: '600' },
+  infoSection: { marginTop: 12, paddingTop: 12, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
+  infoTitle: { fontSize: 11, color: C.textPrimary, marginBottom: 6 },
+  infoText: { fontSize: 10, color: C.textSecondary, lineHeight: 15, marginBottom: 6 },
+  infoBullet: { fontSize: 10, color: C.textSecondary, lineHeight: 15, marginLeft: 4 },
 });

@@ -41,6 +41,40 @@ const TABS = [
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
+// Trait tone helpers: determine positive/negative/neutral from label/status
+function traitTone(label?: string, status?: string): 'positive' | 'negative' | 'neutral' {
+  const text = `${label ?? ''} ${status ?? ''}`.toLowerCase();
+  // Check for unrecognized genotype first
+  if (text.includes('unrecognized')) return 'neutral';
+  // Lactose: NOT intolerant = positive (green)
+  if (text.includes('not lactose intolerant') || text.includes('lactose tolerant')) return 'positive';
+  if (text.includes('lactose intolerant')) return 'negative';
+  // General negative keywords
+  const negativeKeywords = ['reduced', 'intolerant', 'likely', 'elevated', 'high risk', 'high', 'increased', 'risk', 'not tested'];
+  for (const k of negativeKeywords) if (text.includes(k)) return 'negative';
+  const positiveKeywords = ['tolerant', 'normal', 'fast', 'good', 'benefit', 'well-tolerated', 'normal processing'];
+  for (const k of positiveKeywords) if (text.includes(k)) return 'positive';
+  return 'neutral';
+}
+
+function traitEmoji(name?: string): string {
+  if (!name) return '🔬';
+  const n = name.toLowerCase();
+  if (n.includes('caffeine')) return '☕';
+  if (n.includes('lactose') || n.includes('milk')) return '🥛';
+  if (n.includes('vitamin d') || n.includes('vitamin_d') || n.includes('vitamin')) return '🌞';
+  if (n.includes('folate') || n.includes('mthfr')) return '🥬';
+  if (n.includes('celiac')) return '🍞';
+  return '🧬';
+}
+
+function toneBorderColor(tone: 'positive' | 'negative' | 'neutral'): string {
+  if (tone === 'positive') return C.green;   // green border
+  if (tone === 'negative') return C.red;     // red border
+  return C.amber;                             // gray/amber for neutral/unrecognized
+}
+
+
 function Badge({ label, bg, color }: { label: string; bg: string; color: string }) {
   return (
     <View style={[bs.wrap, { backgroundColor: bg }]}>
@@ -144,10 +178,11 @@ function riskBadgeLabel(tier?: string, label?: string): string {
   return 'UNKNOWN';
 }
 
-function carrierAccent(status: string): string {
-  if (status === 'carrier')  return C.amber;
-  if (status === 'affected') return C.red;
-  return C.green;
+function carrierAccent(status: string, label?: string): string {
+  if (status === 'carrier')  return C.amber;    // yellow if carrier detected
+  if (status === 'affected') return C.amber;    // yellow if affected detected
+  if (label && label.includes('Two Copies')) return C.amber;  // yellow for "Two Copies Detected"
+  return C.green;                                // green if non-carrier
 }
 
 function carrierDot(status: string): string {
@@ -332,7 +367,7 @@ function CarrierTab({ serif, serifBold }: { serif?: string; serifBold?: string }
       {results.length === 0 && <EmptyState text="No carrier data available." />}
 
       {results.map((r, i) => (
-        <SectionCard key={i} accent={carrierAccent(r.status)}>
+        <SectionCard key={i} accent={carrierAccent(r.status, r.status_label)}>
           <View style={styles.cardInner}>
             <View style={styles.cardTopRow}>
               <Text style={[styles.geneName, { fontFamily: serifBold }]}>{r.gene}</Text>
@@ -392,26 +427,36 @@ function TraitsTab({ serif, serifBold }: { serif?: string; serifBold?: string })
       {Object.entries(grouped).map(([category, items]) => (
         <View key={category}>
           <Text style={[styles.sectionGroupLabel, { fontFamily: serifBold }]}>{category}</Text>
-          {items.map((t, i) => (
-            <View key={i} style={[styles.traitCard, { marginBottom: 10 }]}>
-              <View style={styles.traitCardInner}>
-                <View style={styles.traitTopRow}>
-                  <Text style={[styles.traitName, { fontFamily: serifBold }]}>{t.name}</Text>
-                  {t.label && (
-                    <Badge label={t.label.toUpperCase()} bg={C.lavender} color={C.lavenderText} />
+          {items.map((t, i) => {
+            const tone = traitTone(t.label, t.status);
+            const accentColor = toneBorderColor(tone);
+            const emoji = traitEmoji(t.name);
+            return (
+              <SectionCard key={i} accent={accentColor}>
+                <View style={styles.cardInner}>
+                  <View style={styles.traitTopRow}>
+                    <View style={styles.traitHeaderLeft}>
+                      <View style={styles.emojiWrap}><Text style={styles.emoji}>{emoji}</Text></View>
+                      <View style={{ flex: 1 }}>
+                        <Text style={[styles.traitName, { fontFamily: serifBold }]}>{t.name}</Text>
+                        <Text style={[styles.bigSummary, { fontFamily: serif }]}>{t.label ?? t.status_label ?? ''}</Text>
+                      </View>
+                    </View>
+                  </View>
+
+                  <MetaRow label="Gene" value={t.gene} serif={serif} serifBold={serifBold} />
+                  {t.rsid && <MetaRow label="rsID" value={t.rsid} serif={serif} serifBold={serifBold} />}
+
+                  {t.detail && (
+                    <>
+                      <Divider />
+                      <Text style={[styles.traitBody, { fontFamily: serif }]}>{t.detail}</Text>
+                    </>
                   )}
                 </View>
-                <MetaRow label="Gene"   value={t.gene}   serif={serif} serifBold={serifBold} />
-                {t.rsid && <MetaRow label="rsID"   value={t.rsid}   serif={serif} serifBold={serifBold} />}
-                {t.detail && (
-                  <>
-                    <Divider />
-                    <Text style={[styles.traitBody, { fontFamily: serif }]}>{t.detail}</Text>
-                  </>
-                )}
-              </View>
-            </View>
-          ))}
+              </SectionCard>
+            );
+          })}
         </View>
       ))}
     </ScrollView>
@@ -544,6 +589,9 @@ const styles = StyleSheet.create({
   subheading: { fontSize: 9, color: C.secondary, marginBottom: 6 },
   noFlags:    { fontSize: 10, color: C.secondary, fontStyle: 'italic' },
 
+  bigSummary: { fontSize: 15, color: C.primary, marginTop: 4 },
+  smallSummary: { fontSize: 12, color: C.secondary, marginTop: 2 },
+
   drugItem: {
     backgroundColor: '#FEF1F1', borderRadius: 10, padding: 10, marginTop: 6,
     borderLeftWidth: 3,
@@ -560,6 +608,9 @@ const styles = StyleSheet.create({
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 2 },
   traitCardInner: { padding: 14 },
   traitTopRow:    { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, gap: 8 },
+  traitHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 },
+  emojiWrap: { width: 40, height: 40, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.6)', alignItems: 'center', justifyContent: 'center' },
+  emoji: { fontSize: 20 },
   traitName:      { fontSize: 13, color: C.primary, flex: 1 },
   traitBody:      { fontSize: 11, color: C.secondary, lineHeight: 16 },
 
