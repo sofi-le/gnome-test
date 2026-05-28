@@ -1,0 +1,58 @@
+{
+  "snps": {
+    "eye_color": {
+      "primary_snps": [
+        {"rsid": "rs12913832", "gene": "HERC2", "effect_allele": "A", "note": "Strongest predictor: AA=blue, AG=green/hazel, GG=brown"},
+        {"rsid": "rs1800407", "gene": "OCA2", "effect_allele": "T", "note": "T shifts toward brown"},
+        {"rsid": "rs12896399", "gene": "SLC24A4", "effect_allele": "T", "note": "T shifts toward brown"},
+        {"rsid": "rs16891982", "gene": "SLC45A2", "effect_allele": "G", "note": "G associated with darker pigmentation"},
+        {"rsid": "rs12203592", "gene": "IRF4", "effect_allele": "T", "note": "T associated with green eyes"},
+        {"rsid": "rs1393350", "gene": "TYR", "effect_allele": "A", "note": "A associated with blue/green eyes"}
+      ]
+    },
+    "hair_color": {
+      "primary_snps": [
+        {"rsid": "rs1805007", "gene": "MC1R", "effect_allele": "T", "note": "Major red hair variant (R151C)"},
+        {"rsid": "rs1805008", "gene": "MC1R", "effect_allele": "T", "note": "Red hair variant (R160W)"},
+        {"rsid": "rs1805006", "gene": "MC1R", "effect_allele": "A", "note": "Red hair variant (D84E)"},
+        {"rsid": "rs1805009", "gene": "MC1R", "effect_allele": "C", "note": "Red hair variant (D294H)"},
+        {"rsid": "rs2228479", "gene": "MC1R", "effect_allele": "A", "note": "Red hair variant (V92M)"},
+        {"rsid": "rs16891982", "gene": "SLC45A2", "effect_allele": "C", "note": "C associated with light hair/skin"},
+        {"rsid": "rs12821256", "gene": "KITLG", "effect_allele": "G", "note": "G associated with blonde hair"},
+        {"rsid": "rs1015362", "gene": "ASIP", "effect_allele": "A", "note": "A associated with lighter hair"},
+        {"rsid": "rs4959270", "gene": "EXOC2", "effect_allele": "A", "note": "Associated with hair color variation"},
+        {"rsid": "rs12896399", "gene": "SLC24A4", "effect_allele": "T", "note": "T associated with lighter hair"}
+      ]
+    },
+    "skin_color": {
+      "primary_snps": [
+        {"rsid": "rs1426654", "gene": "SLC24A5", "effect_allele": "A", "note": "Strongest skin lightness predictor: AA=light, GG=dark"},
+        {"rsid": "rs16891982", "gene": "SLC45A2", "effect_allele": "C", "note": "C associated with lighter skin"},
+        {"rsid": "rs1805007", "gene": "MC1R", "effect_allele": "T", "note": "T associated with fair skin + UV sensitivity"},
+        {"rsid": "rs1805008", "gene": "MC1R", "effect_allele": "T", "note": "T associated with fair skin"},
+        {"rsid": "rs1042602", "gene": "TYR", "effect_allele": "A", "note": "A associated with lighter skin"},
+        {"rsid": "rs1800407", "gene": "OCA2", "effect_allele": "T", "note": "Pigmentation modifier"}
+      ]
+    }
+  },
+  "mc1r_melanoma_risk": {
+    "note": "MC1R loss-of-function variants increase melanoma risk 2-4x. Use as genetic multiplier in skin scanner fusion.",
+    "high_risk_variants": [
+      {"rsid": "rs1805007", "gene": "MC1R", "variant": "R151C", "multiplier": 2.1, "note": "Most common high-risk MC1R variant"},
+      {"rsid": "rs1805008", "gene": "MC1R", "variant": "R160W", "multiplier": 2.0, "note": "High-risk MC1R variant"},
+      {"rsid": "rs1805006", "gene": "MC1R", "variant": "D84E", "multiplier": 1.8, "note": "Moderate-risk MC1R variant"},
+      {"rsid": "rs1805009", "gene": "MC1R", "variant": "D294H", "multiplier": 2.3, "note": "Highest-risk MC1R variant"},
+      {"rsid": "rs2228479", "gene": "MC1R", "variant": "V92M", "multiplier": 1.4, "note": "Low-risk MC1R variant"}
+    ]
+  },
+  "nutrition_traits": {
+    "caffeine": {"rsid": "rs762551", "gene": "CYP1A2", "interpretations": {"AA": "Fast metabolizer", "AC": "Slow metabolizer", "CC": "Slow metabolizer"}},
+    "lactose": {"rsid": "rs4988235", "gene": "MCM6/LCT", "interpretations": {"TT": "Tolerant", "CT": "Tolerant", "CC": "Intolerant"}},
+    "alcohol_flush": {"rsid": "rs671", "gene": "ALDH2", "interpretations": {"GG": "Normal", "AG": "Mild flush", "AA": "Flush — avoid alcohol"}},
+    "vitamin_d": {"rsid": "rs2282679", "gene": "GC", "interpretations": {"GG": "Normal", "GT": "Slightly reduced", "TT": "Reduced absorption"}},
+    "folate": {"rsid": "rs1801133", "gene": "MTHFR", "interpretations": {"CC": "Normal", "CT": "Mildly reduced", "TT": "Reduced — consider methylfolate"}},
+    "celiac": {"rsid": "rs2395182", "gene": "HLA-DQ", "interpretations": {"TT": "Lower risk", "GT": "Moderate risk", "GG": "Elevated risk"}}
+  },
+  "source": "Walsh et al. 2017, Forensic Science International: Genetics",
+  "note": "HIrisPlex-S system for simultaneous prediction of eye, hair, and skin color from DNA"
+}

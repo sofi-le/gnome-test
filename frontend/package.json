@@ -1,0 +1,48 @@
+{
+  "name": "g-nome",
+  "version": "1.0.0",
+  "private": true,
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@expo-google-fonts/inria-serif": "^0.4.1",
+    "@expo-google-fonts/playfair-display": "^0.2.2",
+    "expo": "~54.0.34",
+    "expo-document-picker": "~14.0.8",
+    "expo-file-system": "~19.0.22",
+    "expo-font": "~14.0.11",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native": "0.81.5",
+    "react-native-web": "~0.21.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.24.0",
+    "@types/react": "~19.1.10",
+    "babel-preset-expo": "~54.0.10",
+    "typescript": "~5.9.2"
+  },
+  "expo": {
+    "sdkVersion": "54.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "entryPoint": "./App.tsx",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

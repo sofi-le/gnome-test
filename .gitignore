@@ -1,0 +1,53 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# ---------- Python (backend) ----------
+backend/__pycache__/
+backend/**/__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+backend/.env
+backend/.env.local
+
+# Models (too large for git)
+backend/models/
+*.task
+*.pt
+*.bin
+*.safetensors
+
+# Large dataset files (download via script)
+backend/data/pgs_scores/*.txt
+backend/data/pgs_scores/*.gz
+backend/data/cpic/diplotypes.json
+backend/data/cpic/recommendations.json
+backend/data/cpic/genes.json
+backend/data/cpic/drugs.json
+backend/data/cpic/gene_drug_pairs.json
+backend/data/pharmgkb/
+backend/data/clinvar/variant_summary*
+
+# User session data (contains genomic data — never commit)
+backend/sessions/
+
+# ---------- Node / Expo (frontend) ----------
+frontend/node_modules/
+frontend/.expo/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Claude-flow artifacts
+.claude-flow/
+.claude/
